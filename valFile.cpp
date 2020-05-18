@@ -9,12 +9,13 @@
 
 Acct Account;
 std::unordered_map<std::string, int> recentlyProcessedAddrs;            //map of MAC addrs and time since last process
+                                                                        //made global var to eliminate seg faults, although passing pointer to local var is ideal
 
 int main()
 {   
     InitDesiredAddrs();                                                 //From BLEService
 
-    InitRecentlyProcessedAddrs();
+    InitRecentlyProcessedAddrs();                                       
 
     ValidationProcess();
 }
@@ -30,9 +31,9 @@ int ValidationProcess()
     {                                    
         switch(machineState)
         {
-            case BLE_ST:                                                //simulates waiting for a beacon to arrive 
+            case BLE_ST:
 
-                beaconAcctNum = BLEService();
+                beaconAcctNum = BLEService();                           //returns beacon info or null string
 
                 if(beaconAcctNum.compare(NULL_STR) == 0)                //no beacon found
                 {
@@ -240,7 +241,7 @@ int InitRecentlyProcessedAddrs()
 
     for(desiredAddrsItr = desiredAddrs.begin(); desiredAddrsItr != desiredAddrs.end(); desiredAddrsItr++)         //iterate through recently processed addrs
     {
-        recentlyProcessedAddrs.insert(std::make_pair(*desiredAddrsItr, 0));
+        recentlyProcessedAddrs.insert(std::make_pair(*desiredAddrsItr, 0));                                       //gets addrs from desired addrs 
     }
 
     return 0;
@@ -276,8 +277,8 @@ int UIClient()
 
     std::string strData = Account.getName() + DELIMITER
 	+ std::to_string(Account.getBalance()) + DELIMITER 
-	+ (Account.getFoundStatus() ? "1" : "0") + DELIMITER 
-	+ (Account.getBalanceStatus() ? "1" : "0") + '\0';
+	+ (Account.getFoundStatus() ? "1" : "0") + DELIMITER                                   //either 1 or 0 based on true or false
+	+ (Account.getBalanceStatus() ? "1" : "0") + NULL_STR;                                      
 
     const char *data = strData.c_str();
 

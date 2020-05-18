@@ -41,6 +41,9 @@ def main():
     screenWidth = tk.winfo_screenwidth()
     screenHeight = tk.winfo_screenheight()
 
+    #this bool is used to determine what size monitor (based on pixels) the gui is being displayed on
+    #if smallScreen = true very small raspberry pi monitor 
+    #if smallScreen = false standard computer screen size
     if(screenWidth <= smallScreenMax):
         smallScreen = True
     else:
@@ -102,9 +105,9 @@ def main():
     while True: 
         tk.update_idletasks()
         tk.update()
-        Timer(guiMachineDelay)                                              
+        Timer(guiMachineDelay)                                              #not sure if necessary because program will wait for connection from client                                           
 
-        connection, clientAddress = guiSocket.accept()	                    #connection made with client (val)
+#        connection, clientAddress = guiSocket.accept()	                    #connection made with client (val)
         
         try:
             #Incoming data in order: "<Acct Name>, <Acct Balance>, <Acct Found Status>, <Acct Balance Status>"
@@ -116,10 +119,10 @@ def main():
 
             strData = cleanBytes[dataIndex].decode("utf-8")                 #decode the string type and keep whatever is in front of the null terminator
             
-            data = strData.split(delimiter)
+            data = strData.split(delimiter)                                 #split
 
             #Code to test w/o validator socket, comment out all socket code 
-#            strData = ["Venkat,34.0,1,1", "Venkat,34.0,0,1", "Venkat,34.0,1,0", "Venkat,34.0,1,1"]	            
+#            strData = ["Akila,34.0,1,1", "Edgar,34.0,0,1", "Tessa,2.0,1,0", "Cassidy,34.0,1,1"]	            
 
 #            data = strData[i].split(delimiter)                      
 #            i = i + 1	
@@ -223,7 +226,9 @@ def main():
             tk.update_idletasks()
             tk.update()
             Timer(guiScreenDelay)                                   #TODO: make dynamic, different delay times for different screens or if beacon is waiting
+                                                                    #unsure how to check if beacon info is waiting in buffer or waiting for connection
 
+            #clear specific images after delay
             if(not acctFoundStatus):
                 canvas.delete(canvasInvalidImg)
                 canvas.delete(canvasNotFoundText)

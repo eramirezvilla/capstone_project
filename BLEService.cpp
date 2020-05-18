@@ -89,7 +89,7 @@ int ParseBtmgmtFind(std::string terminalOutput, std::unordered_map<std::string, 
                 devRssi = devRssi.erase(0, 1);                  //erase '-' in front of rssi to get only int value cmd output: "-22" we want "22"
                 int rssi = stoi(devRssi);                       //cast to int
 
-                foundMap[devAddr] = rssi;                     //save addr and rssi in map
+                foundMap[devAddr] = rssi;                       //save addr and rssi in map
             }
         }
     }
@@ -124,7 +124,7 @@ std::string GetStdoutFromCommand(std::string cmd)
     return data;
 }
 
-
+//TODO: scan multiple times to ensure the beacon that is selected is truly the closest one
 std::string BLEService()
 {
     //map of all MAC addrs and their RSSI values in a scan
@@ -142,12 +142,12 @@ std::string BLEService()
     
     std::string cmnd = GetStdoutFromCommand(BTMGMT_FIND);                                               //gets all output from command line
     
-    ParseBtmgmtFind(cmnd, foundAddrs);                                                                              //gets desired output into foundAddrs
+    ParseBtmgmtFind(cmnd, foundAddrs);                                                                  //gets desired output into foundAddrs
 
     for(foundAddrsItr = foundAddrs.begin(); foundAddrsItr != foundAddrs.end(); foundAddrsItr++)         //iterates through all of the addrs found in the scan
     {
         desiredAddrsItr = desiredAddrs.find(foundAddrsItr->first);                                      //searches for found addr in the set of predefined addrs for a match
-        if(desiredAddrsItr != desiredAddrs.end() && foundAddrsItr->second < RSSI_MIN_VAL)               //TODO: currently set to 55 need to decide what the best value is  
+        if(desiredAddrsItr != desiredAddrs.end() && foundAddrsItr->second < RSSI_MIN_VAL)               
         {
             approvedAddrs[foundAddrsItr->first] = foundAddrsItr->second;                                //adds matches and their rssi value to map of approved addrs
             beaconFound = true;
@@ -155,7 +155,7 @@ std::string BLEService()
     }
 
     //RSSI Check
-    if(beaconFound)
+    if(beaconFound)                                                                                    
     {
         int currRssi, minRssi = (approvedAddrs.begin())->second;                                        //set the minimum rssi to the first approved addrs rssi and compare from there
         std::string minKey = (approvedAddrs.begin())->first;
